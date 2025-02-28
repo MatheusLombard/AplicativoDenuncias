@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-export function TelaInicial() {
+export function TelaInicial({navigation}) {
 
   const [usuario, setUsuario] = useState('Otávio');
   return (
@@ -16,7 +16,7 @@ export function TelaInicial() {
       <View style={styles.navigation}>
         <Text style={styles.navigationTitle}>Área de Navegação:</Text>
 
-        <TouchableOpacity style={styles.navigationBox}>
+        <TouchableOpacity style={styles.navigationBox} onPress={() => navigation.navigate('Camera')}>
           <View style={{width: '70%'}}>
             <Text style={styles.navigationBoxTitle}>Denunciar Riscos/Perigos</Text>
             <Text style={styles.navigationBoxSubtitle}>Denúncie os perigos aqui</Text>
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     padding: 50,
+    paddingBottom: 0,
   },
   header:{
     width: '100%',
