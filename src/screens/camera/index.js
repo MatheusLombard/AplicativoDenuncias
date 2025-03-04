@@ -9,76 +9,92 @@ export function TelaCamera({ navigation }) {
   const camRef = useRef(null);
   const [facing, setFacing] = useState('back');
   const [qtdZoom, setQtdZoom] = useState(0);
-  const [hasPermition, setHasPermition] = useCameraPermissions();
+  const [permission, requestPermission] = useCameraPermissions();
   const [uriImage, setUriImage] = useState();
 
-  if (!hasPermition) {
+  if (!permission) {
     return <View />
   }
-  if (!hasPermition.granted) {
-    return (
-      <View >
-        <Text >Precisamos da sua permissão para acessar sua camera</Text>
-        <Button  />
-      </View>
-    )
-  }
+  // if (!permission.granted) {
+  //   // Camera permissions are not granted yet.
+  //   return (
+  //     <View style={styles.containerMessage}>
+  //       <Text style={styles.message}>Precisamos da sua permissão para acessar sua câmera</Text>
+  //       <TouchableOpacity style={styles.button} onPress={requestPermission}>
+  //         <Text style={styles.buttonText}>
+  //           CONCEDER PERMISSÃO
+  //         </Text>
+  //       </TouchableOpacity>
+  //     </View>
+  //   );
+  // }
 
   async function tirarFoto() {
     if (camRef) {
-      const data = await camRef.current.takePictureAsync({ base64: true, flash : 'on' });
+      const data = await camRef.current.takePictureAsync({ base64: true, flash: 'on' });
       setUriImage(data.uri)
     }
   }
 
   function trocarCamera() {
     console.log('passando aqui')
-    if(facing === 'back'){
+    if (facing === 'back') {
       setFacing('front')
-    }else{
+    } else {
       setFacing('back')
     }
   }
 
-  function zoom(tipo){
-      if(tipo === 'aumentar' && qtdZoom < 0.9){
-        setQtdZoom(qtdZoom + 0.10)
-      }else if(tipo === 'diminuir' && qtdZoom > 0.1){
-        setQtdZoom(qtdZoom - 0.10)
-      }
+  function zoom(tipo) {
+    if (tipo === 'aumentar' && qtdZoom < 0.9) {
+      setQtdZoom(qtdZoom + 0.10)
+    } else if (tipo === 'diminuir' && qtdZoom > 0.1) {
+      setQtdZoom(qtdZoom - 0.10)
+    }
   }
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <CameraView style={styles.visorCamera} facing={facing} ref={camRef} zoom={qtdZoom}>
-          <View style={styles.actionsCamera}>
-            <TouchableOpacity onPress={trocarCamera} style={styles.buttonRefresh}>
-              <FontAwesome name='refresh' color={'#fff'} size={25} />
+        {!permission.granted &&
+          <View style={styles.containerMessage}>
+            <Text style={styles.message}>Precisamos da sua permissão para acessar sua câmera</Text>
+            <TouchableOpacity style={styles.button} onPress={requestPermission}>
+              <Text style={styles.buttonText}>
+                CONCEDER PERMISSÃO
+              </Text>
             </TouchableOpacity>
-            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 20, }}>
-              <TouchableOpacity onPress={() => zoom('diminuir')}  style={styles.buttonZoom}>
-                <FontAwesome name='search-minus' color={'#fff'} size={25} />
+          </View>
+        }{permission.granted &&
+          <CameraView style={styles.visorCamera} facing={facing} ref={camRef} zoom={qtdZoom}>
+            <View style={styles.actionsCamera}>
+              <TouchableOpacity onPress={trocarCamera} style={styles.buttonRefresh}>
+                <FontAwesome name='refresh' color={'#fff'} size={25} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={tirarFoto} style={styles.buttonTirarFoto}>
-                <View style={styles.buttonTirarFotoDentro} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => zoom('aumentar')} style={styles.buttonZoom}>
-                <FontAwesome name='search-plus' color={'#fff'} size={25} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 20, }}>
+                <TouchableOpacity onPress={() => zoom('diminuir')} style={styles.buttonZoom}>
+                  <FontAwesome name='search-minus' color={'#fff'} size={25} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={tirarFoto} style={styles.buttonTirarFoto}>
+                  <View style={styles.buttonTirarFotoDentro} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => zoom('aumentar')} style={styles.buttonZoom}>
+                  <FontAwesome name='search-plus' color={'#fff'} size={25} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </CameraView>
+
+        }
+        {uriImage &&
+          <View style={styles.containerCardImage}>
+            <View style={styles.cardImage}>
+              <Image source={{ uri: uriImage }} style={styles.image} />
+              <TouchableOpacity onPress={() => navigation.navigate('Formulario')} style={styles.button}>
+                <Text style={styles.buttonText}>Prosseguir com a Imagem</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </CameraView>
-        {uriImage && 
-        <View style={styles.containerCardImage}>
-          <View style={styles.cardImage}>
-            <Image source={{ uri: uriImage }} style={styles.image} />
-            <TouchableOpacity onPress={() => navigation.navigate('Formulario')} style={styles.buttonCardImage}>
-              <Text style={styles.buttonCardImageText}>Prosseguir com a Imagem</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-          
         }
       </SafeAreaView>
     </SafeAreaProvider>
@@ -86,10 +102,23 @@ export function TelaCamera({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  containerMessage: {
+    padding: 40,
+    gap: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#BDBDBD'
+
+  },
+  message: {
+    fontSize: 20,
+    textAlign: 'justify'
+  },
   container: {
     height: '100%',
     width: '100%',
-    backgroundColor: '#E8EEF1'
+    backgroundColor: '#E8EEF1',
+    justifyContent: 'center',
   },
   visorCamera: {
     height: '50%',
@@ -109,7 +138,7 @@ const styles = StyleSheet.create({
   },
   buttonRefresh: {
     position: 'absolute',
-    left: 0, 
+    left: 0,
   },
   buttonTirarFoto: {
     height: 70,
@@ -126,12 +155,12 @@ const styles = StyleSheet.create({
     width: 55,
     borderRadius: '50%',
   },
-  containerCardImage:{
+  containerCardImage: {
     height: '50%',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardImage:{
+  cardImage: {
     height: '80%',
     width: '80%',
     backgroundColor: '#BDBDBD',
@@ -139,18 +168,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  image:{
+  image: {
     width: '80%',
     height: '70%',
-    marginBottom: 15,  
+    marginBottom: 15,
     borderRadius: 25
   },
-  buttonCardImage:{
+  button: {
     backgroundColor: '#007BFF',
     padding: 15,
     borderRadius: 20,
   },
-  buttonCardImageText:{
+  buttonText: {
     color: '#fff',
     fontWeight: 'bold'
   }

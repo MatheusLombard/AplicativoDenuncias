@@ -1,5 +1,15 @@
 {
   "expo": {
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir $(PRODUCT_NAME) acessar sua camera",
+          "microphonePermission": "Permitir $(PRODUCT_NAME) acessar seu microfone",
+          "recordAudioAndroid": true
+        }
+      ]
+    ],
     "name": "appDenuncias",
     "slug": "appDenuncias",
     "version": "1.0.0",
@@ -19,10 +29,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.matheus1233.appDenuncias"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b5a04dce-0f46-4561-b448-3fd30655f470"
+      }
     }
   }
 }
