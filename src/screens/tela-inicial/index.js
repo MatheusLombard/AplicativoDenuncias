@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export function TelaInicial({navigation}) {
@@ -7,7 +7,7 @@ export function TelaInicial({navigation}) {
   const [usuario, setUsuario] = useState('Otávio');
   return (
     <SafeAreaProvider>
-    <SafeAreaView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Olá {usuario}...</Text>
@@ -64,7 +64,7 @@ export function TelaInicial({navigation}) {
         source={require('../../../assets/favicon.png')}/>
       </View>
 
-    </SafeAreaView>
+    </ScrollView>
     </SafeAreaProvider>
   );
 }
@@ -72,11 +72,11 @@ export function TelaInicial({navigation}) {
 const styles = StyleSheet.create({
   container:{
     width: '100%',
-    height: '100%',
+    flexGrow: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
     padding: 50,
-    paddingBottom: 0,
+    gap: 30,
   },
   header:{
     width: '100%',
@@ -84,10 +84,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 35,
     fontWeight: 'bold',
-    height: 100,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)', // Cor da sombra
-    textShadowOffset: { width: 50, height: 37 }, // Posição da sombra
-    textShadowRadius: 18, // Desfoque da sombra
+    width:'100%',
   },
   navigation:{
     width: '100%',

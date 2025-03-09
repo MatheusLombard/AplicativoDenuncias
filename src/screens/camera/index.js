@@ -1,8 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useEffect, useRef, useState } from 'react';
-import { Button } from '@react-navigation/elements';
+import { useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons'
 
 export function TelaCamera({ navigation }) {
@@ -15,19 +14,6 @@ export function TelaCamera({ navigation }) {
   if (!permission) {
     return <View />
   }
-  // if (!permission.granted) {
-  //   // Camera permissions are not granted yet.
-  //   return (
-  //     <View style={styles.containerMessage}>
-  //       <Text style={styles.message}>Precisamos da sua permissão para acessar sua câmera</Text>
-  //       <TouchableOpacity style={styles.button} onPress={requestPermission}>
-  //         <Text style={styles.buttonText}>
-  //           CONCEDER PERMISSÃO
-  //         </Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
-  // }
 
   async function tirarFoto() {
     if (camRef) {
@@ -91,7 +77,7 @@ export function TelaCamera({ navigation }) {
             <View style={styles.cardImage}>
               <Image source={{ uri: uriImage }} style={styles.image} />
               <TouchableOpacity onPress={() => navigation.navigate('Formulario')} style={styles.button}>
-                <Text style={styles.buttonText}>Prosseguir com a Imagem</Text>
+                <Text style={styles.buttonText}>Prosseguir</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -161,12 +147,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardImage: {
-    height: '80%',
+    marginTop: 15,
     width: '80%',
     backgroundColor: '#BDBDBD',
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: '20',
   },
   image: {
     width: '80%',
@@ -178,10 +165,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     padding: 15,
     borderRadius: 20,
+    maxHeight: '70%',
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   }
 
 })
