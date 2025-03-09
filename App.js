@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator();
 
 function RootStack() {
   return (
-    <Stack.Navigator initialRouteName="Formulario" screenOptions={{headerShown : false}}>
+    <Stack.Navigator initialRouteName="Login" screenOptions={{headerShown : false}}>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="TelaInicial" component={TelaInicial} />
       <Stack.Screen name="Camera" component={TelaCamera} />
