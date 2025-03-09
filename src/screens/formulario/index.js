@@ -88,10 +88,8 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     borderWidth: 1,
     backgroundColor: '#fff',
-    height: 50,
-  },
-  groupInputDescription:{
-    flex: 1
+    height: 35,
+    paddingHorizontal: 10,
   },
   buttonView:{
     width: '100%',

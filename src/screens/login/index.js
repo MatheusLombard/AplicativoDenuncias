@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderColor: '#000',
         borderWidth: 1,
+        height: 40
     },
     buttonEntrar: {
         backgroundColor: '#007BFF',
