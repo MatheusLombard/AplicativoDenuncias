@@ -1,10 +1,39 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import { ScrollView, Text, TextInput, View, TouchableOpacity, StyleSheet} from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export function Formulario() {
-
+export function Formulario({navigation, route}) {
   const [titulo, setTitulo] = useState();
+  const [local, setLocal] = useState();
+  const [descricao, setDescricao] = useState();
+  const { imagem } = route.params
+
+  async function enviar(){
+    const idUsuario = await AsyncStorage.getItem('IdUsuario')
+    try {
+      const response = await fetch('http://localhost:3000/denuncias', {
+        method: 'POST',
+        body: JSON.stringify({
+          idUsuario: idUsuario,
+          titulo: titulo,
+          local: local,
+          descricao: descricao,
+          imagem: imagem,
+          pendente: true 
+        }),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      });
+  
+      const json = await response.json();
+      console.log('Enviado para o banco de dados com sucesso: ', json);
+    } catch (error) {
+      console.error('Erro ao enviar denúncia:', error);
+    }
+  }
+
   return (
     <SafeAreaProvider>
       <ScrollView contentContainerStyle={styles.container}>
@@ -15,7 +44,7 @@ export function Formulario() {
 
         <View style={styles.inputBox}>
           <View style={styles.groupInput}>
-            <Text style={styles.inputBoxLabel}>Titulo da Denúncia: {titulo}</Text>
+            <Text style={styles.inputBoxLabel}>Titulo da Denúncia:</Text>
             <TextInput
               style={styles.inputBoxTextInput}
               placeholder='Digite aqui...'
@@ -24,27 +53,27 @@ export function Formulario() {
             />
           </View>
           <View style={styles.groupInput}>
-            <Text style={styles.inputBoxLabel}>Local do Perigo: {titulo}</Text>
+            <Text style={styles.inputBoxLabel}>Local do Perigo:</Text>
             <TextInput
               style={styles.inputBoxTextInput}
               placeholder='Digite aqui...'
-              value={titulo}
-              onChangeText={(text) => setTitulo(text)}
+              value={local}
+              onChangeText={(text) => setLocal(text)}
             />
           </View>
           <View style={{...styles.groupInput, flex: 1}}>
-            <Text style={styles.inputBoxLabel}>Descrição do Perigo: {titulo}</Text>
+            <Text style={styles.inputBoxLabel}>Descrição do Perigo:</Text>
             <TextInput
               style={{...styles.inputBoxTextInput, flex: 1}}
               placeholder='Digite aqui...'
-              value={titulo}
-              onChangeText={(text) => setTitulo(text)}
+              value={descricao}
+              onChangeText={(text) => setDescricao(text)}
             />
           </View>
         </View>
 
         <View style={styles.buttonView}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => enviar()}>
             <Text style={styles.buttonText}>ENVIAR</Text>
           </TouchableOpacity>
         </View>
@@ -69,6 +98,7 @@ const styles = StyleSheet.create({
   },
   inputBox:{
     height: '60%',
+    minHeight: 500,
     width: '80%',
     backgroundColor: '#F1F6FC',
     borderRadius: 25,
@@ -77,7 +107,6 @@ const styles = StyleSheet.create({
   },
   groupInput:{
     height: 90,
-
     gap: 10,
   },
   inputBoxLabel:{
@@ -88,8 +117,11 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     borderWidth: 1,
     backgroundColor: '#fff',
-    height: 35,
+    height: 40,
     paddingHorizontal: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonView:{
     width: '100%',

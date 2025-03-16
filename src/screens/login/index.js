@@ -1,11 +1,43 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
-import { Text, View, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export function Login({ navigation }) {
+    const [nome, setNome] = useState();
     const [cpf, setCpf] = useState();
-    const [senha, setSenha] = useState();
+    const [resposta, setResposta] = useState()
 
+
+    async function verificarLogin(){
+        try {
+          const response = await fetch('http://localhost:3000/loginUsuarios', {
+            method: 'POST',
+            body: JSON.stringify({
+                nome: nome,
+                cpf: cpf
+            }),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+          });
+
+          const json = await response.json();
+          console.log('Conferindo no banco: ', json);
+          if(json){
+            if(json.message === 'Usuario correto'){
+                Alert.alert('Sucesso', 'Usuário correto, pode prosseguir...')
+                console.log('O id do usuario é: ', json.result[0].id)
+                navigation.navigate('TelaInicial')
+                AsyncStorage.setItem('IdUsuario', json.result[0].id)
+            }else{
+                Alert.alert('Erro', 'Usuário não encontrado')
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao enviar denúncia:', error);
+        }
+      }
     return (
         <SafeAreaProvider>
             <ScrollView contentContainerStyle={{flexGrow: 1}}>
@@ -19,6 +51,15 @@ export function Login({ navigation }) {
                     <Text style={styles.subtitle}>preencha suas informações abaixo: </Text>
 
                     <View style={styles.viewInput}>
+                        <Text style={styles.label}>Nome Completo:</Text>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder='Digite aqui...'
+                            onChangeText={(text) => setNome(text)}
+                            value={nome}
+                        />
+                    </View>
+                    <View style={styles.viewInput}>
                         <Text style={styles.label}>CPF:</Text>
                         <TextInput
                             style={styles.textInput}
@@ -27,21 +68,12 @@ export function Login({ navigation }) {
                             value={cpf}
                         />
                     </View>
-                    <View style={styles.viewInput}>
-                        <Text style={styles.label}>Senha:</Text>
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder='Digite aqui...'
-                            onChangeText={(text) => setSenha(text)}
-                            value={senha}
-                        />
-                    </View>
 
                 </View>
 
                 <TouchableOpacity 
                 style={styles.buttonEntrar} 
-                onPress={() => navigation.navigate('TelaInicial')}
+                onPress={() => verificarLogin()}
                 >
                     <Text style={styles.textButtonEntrar}>ENTRAR</Text>
                 </TouchableOpacity>

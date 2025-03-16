@@ -10,6 +10,7 @@ export function TelaCamera({ navigation }) {
   const [qtdZoom, setQtdZoom] = useState(0);
   const [permission, requestPermission] = useCameraPermissions();
   const [uriImage, setUriImage] = useState();
+  const [base64Image, setBase64Image] = useState();
 
   if (!permission) {
     return <View />
@@ -19,6 +20,7 @@ export function TelaCamera({ navigation }) {
     if (camRef) {
       const data = await camRef.current.takePictureAsync({ base64: true, flash: 'on' });
       setUriImage(data.uri)
+      setBase64Image(data.base64)
     }
   }
 
@@ -38,6 +40,12 @@ export function TelaCamera({ navigation }) {
       setQtdZoom(qtdZoom - 0.10)
     }
   }
+
+function prosseguir() {
+  navigation.navigate('Formulario', {
+    imagem: base64Image
+  })
+}
 
   return (
     <SafeAreaProvider>
@@ -76,7 +84,7 @@ export function TelaCamera({ navigation }) {
           <View style={styles.containerCardImage}>
             <View style={styles.cardImage}>
               <Image source={{ uri: uriImage }} style={styles.image} />
-              <TouchableOpacity onPress={() => navigation.navigate('Formulario')} style={styles.button}>
+              <TouchableOpacity onPress={() => prosseguir()} style={styles.button}>
                 <Text style={styles.buttonText}>Prosseguir</Text>
               </TouchableOpacity>
             </View>
