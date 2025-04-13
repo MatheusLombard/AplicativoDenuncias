@@ -41,15 +41,18 @@ export function TelaCamera({ navigation }) {
     }
   }
 
-function prosseguir() {
-  navigation.navigate('Formulario', {
-    imagem: base64Image
-  })
-}
+  function prosseguir() {
+    navigation.navigate('Formulario', {
+      imagem: base64Image
+    })
+  }
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
+        <TouchableOpacity style={{ alignSelf: 'flex-start', margin: 10 }} onPress={() => navigation.goBack('')}>
+          <Text style={{ fontWeight: '800' }}>Voltar</Text>
+        </TouchableOpacity>
         {!permission.granted &&
           <View style={styles.containerMessage}>
             <Text style={styles.message}>Precisamos da sua permissão para acessar sua câmera</Text>

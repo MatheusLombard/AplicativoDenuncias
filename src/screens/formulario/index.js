@@ -1,15 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, View, TouchableOpacity, StyleSheet} from 'react-native';
+import { ScrollView, Text, TextInput, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export function Formulario({navigation, route}) {
+export function Formulario({ navigation, route }) {
   const [titulo, setTitulo] = useState();
   const [local, setLocal] = useState();
   const [descricao, setDescricao] = useState();
   const { imagem } = route.params
 
-  async function enviar(){
+  async function enviar() {
     const idUsuario = await AsyncStorage.getItem('IdUsuario')
     try {
       const response = await fetch('http://localhost:3000/denuncias', {
@@ -20,13 +20,13 @@ export function Formulario({navigation, route}) {
           local: local,
           descricao: descricao,
           imagem: imagem,
-          pendente: true 
+          pendente: true
         }),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       });
-  
+
       const json = await response.json();
       console.log('Enviado para o banco de dados com sucesso: ', json);
     } catch (error) {
@@ -37,7 +37,9 @@ export function Formulario({navigation, route}) {
   return (
     <SafeAreaProvider>
       <ScrollView contentContainerStyle={styles.container}>
-
+        <TouchableOpacity style={{ alignSelf: 'flex-start', margin: 10 }} onPress={() => navigation.goBack('')}>
+          <Text style={{ fontWeight: '800' }}>Voltar</Text>
+        </TouchableOpacity>
         <View style={styles.tituloView}>
           <Text style={styles.tituloText}>DESCREVA SUA DENÚNCIA</Text>
         </View>
@@ -61,10 +63,10 @@ export function Formulario({navigation, route}) {
               onChangeText={(text) => setLocal(text)}
             />
           </View>
-          <View style={{...styles.groupInput, flex: 1}}>
+          <View style={{ ...styles.groupInput, flex: 1 }}>
             <Text style={styles.inputBoxLabel}>Descrição do Perigo:</Text>
             <TextInput
-              style={{...styles.inputBoxTextInput, flex: 1}}
+              style={{ ...styles.inputBoxTextInput, flex: 1 }}
               placeholder='Digite aqui...'
               value={descricao}
               onChangeText={(text) => setDescricao(text)}
@@ -83,7 +85,7 @@ export function Formulario({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-  container:{
+  container: {
     height: '100%',
     width: '100%',
     backgroundColor: '#E8EEF1',
@@ -92,11 +94,11 @@ const styles = StyleSheet.create({
     gap: 40,
   },
 
-  tituloText:{
+  tituloText: {
     fontSize: 28,
     textAlign: 'center'
   },
-  inputBox:{
+  inputBox: {
     height: '60%',
     minHeight: 500,
     width: '80%',
@@ -105,15 +107,15 @@ const styles = StyleSheet.create({
     padding: 30,
     gap: 20,
   },
-  groupInput:{
+  groupInput: {
     height: 90,
     gap: 10,
   },
-  inputBoxLabel:{
+  inputBoxLabel: {
     fontSize: 20,
     fontWeight: '700'
   },
-  inputBoxTextInput:{
+  inputBoxTextInput: {
     borderColor: '#000',
     borderWidth: 1,
     backgroundColor: '#fff',
@@ -123,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonView:{
+  buttonView: {
     width: '100%',
     alignItems: 'center',
   },

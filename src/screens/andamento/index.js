@@ -1,79 +1,69 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-
-const solicitacoes = [
-    {
-        id: "1",
-        titulo: "Produto",
-        descricao: "Lorem ipsum is si...",
-        solicitadoEm: "XX/XX/XXXX",
-        previsao: "XX/XX/XXXX",
-        pendencia: 'sim'
-    },
-    {
-        id: "2",
-        titulo: "Produto",
-        descricao: "Lorem ipsum is si...",
-        solicitadoEm: "XX/XX/",
-        previsao: "XX/XX/",
-        pendencia: 'nao'
-    },
-    {
-        id: "3",
-        titulo: "Produto",
-        descricao: "Lorem ipsum is si...",
-        solicitadoEm: "XX/XX/XXXX",
-        previsao: "XX/XX/XXXX",
-        pendencia: 'sim'
-    },
-    {
-        id: "4",
-        titulo: "Produto",
-        descricao: "Lorem ipsum is si...",
-        solicitadoEm: "XX/XX/",
-        previsao: "XX/XX/",
-        pendencia: 'nao'
-    },
-    {
-        id: "5",
-        titulo: "Produto",
-        descricao: 'iVBORw0KGgoAAAANSUhEUgAAAoAAAAHgCAYAAAA10dzkAAAAAXNSR0IArs4c6QAAGJ9JREFUeF7t1kERACAMA0FqCrtIhRls3NZBNn1k1tl3OQIECBAgQIAAgYzAGICZrgUlQIAAAQIECHwBA9AjECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BA',
-        solicitadoEm: "XX/XX/",
-        previsao: "XX/XX/",
-        imagem: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAHgCAYAAAA10dzkAAAAAXNSR0IArs4c6QAAGJ9JREFUeF7t1kERACAMA0FqCrtIhRls3NZBNn1k1tl3OQIECBAgQIAAgYzAGICZrgUlQIAAAQIECHwBA9AjECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAgAHoBwgQIECAAAECMQEDMFa4uAQIECBAgAABA9APECBAgAABAgRiAgZgrHBxCRAgQIAAAQIGoB8gQIAAAQIECMQEDMBY4eISIECAAAECBAxAP0CAAAECBAgQiAkYgLHCxSVAgAABAgQIGIB+gAABAgQIECAQEzAAY4WLS4AAAQIECBAwAP0AAQIECBAgQCAmYADGCheXAAECBAgQIGAA+gECBAgQIECAQEzAAIwVLi4BAgQIECBAwAD0AwQIECBAgACBmIABGCtcXAIECBAgQICAAegHCBAgQIAAAQIxAQMwVri4BAgQIECAAAED0A8QIECAAAECBGICBmCscHEJECBAgAABAgagHyBAgAABAgQIxAQMwFjh4hIgQIAAAQIEDEA/QIAAAQIECBCICRiAscLFJUCAAAECBAgYgH6AAAECBAgQIBATMABjhYtLgAABAgQIEDAA/QABAgQIECBAICZgAMYKF5cAAQIECBAgYAD6AQIECBAgQIBATMAAjBUuLgECBAgQIEDAAPQDBAgQIECAAIGYgAEYK1xcAgQIECBAgIAB6AcIECBAgAABAjEBAzBWuLgECBAgQIAAAQPQDxAgQIAAAQIEYgIGYKxwcQkQIECAAAECBqAfIECAAAECBAjEBAzAWOHiEiBAgAABAgQMQD9AgAABAgQIEIgJGICxwsUlQIAAAQIECBiAfoAAAQIECBAgEBMwAGOFi0uAAAECBAgQMAD9AAECBAgQIEAgJmAAxgoXlwABAgQIECBgAPoBAgQIECBAgEBMwACMFS4uAQIECBAgQMAA9AMECBAgQIAAgZiAARgrXFwCBAgQIECAwAMkCW+OBoPuAgAAAABJRU5ErkJggg==',
-        pendencia: 'nao'
-    },
-];
-
-function Card({ item, type }) {
+function Card({ item, type, seeMore }) {
     return (
-        <View style={[styles.cardContainer,styles.cardContainerSeeMore, type == 'em andamento'? styles.cardContainerAndamento: styles.cardContainerConcluidas]}>
-            <View style={styles.cardView}>
-                <Text style={{fontWeight: '900', textAlign: 'center'}}>{item.titulo}</Text>
-                <Text style={{color: '#fff'}} ><Text style={{fontWeight: '900', color: '#000'}}>Denunciado em:</Text> {item.solicitadoEm}</Text>
-                <Text style={{color: '#fff', width:180, height: 30, overflow: 'hiden'}} ><Text style={{fontWeight: '900', color: '#000'}}>Descrição:</Text> {item.descricao}</Text>
+        <View style={[seeMore == 'yes' ? styles.cardContainerSeeMore : styles.cardContainer, type == 'em andamento'? styles.cardContainerAndamento: styles.cardContainerConcluidas]}>
+            <View style={{...styles.cardView, width: seeMore == 'yes' ? '100%' : 'auto'}}>
+                <Text style={{fontWeight: '900', textAlign: 'center', fontSize: seeMore == 'yes' ? 20 : 15}}>{item.titulo}</Text>
+                <Text style={{color: '#fff', width: seeMore == 'yes' ? '80%' : 'auto', alignSelf: seeMore == 'yes' ? 'center' : 'flex-start'}} ><Text style={{fontWeight: '900', color: '#000'}}>Denunciado em:</Text> {item.local}</Text>
+                <Text style={seeMore == 'yes' ? styles.cardContainerDescriptionSeeMore : styles.cardContainerDescription} ><Text style={{fontWeight: '900', color: '#000'}}>Descrição:</Text> {item.descricao}</Text>
             </View>
             <View>
-                <Image source={{uri: item.imagem}}  width={50} height={50} style={{borderColor: '#000', borderWidth: 1}}/>
+                <Image source={{ uri: `${item.imagemBase64}` }}   style={seeMore == 'yes' ? styles.cardContainerImageSeeMore : styles.cardContainerImage}  resizeMode="cover"/>
+
             </View>
         </View>
     )
 }
 
-export function TelaAndamento() {
+export function TelaAndamento({navigation}) {
     const [buttonActivated, setButtonActivated] = useState('em andamento')
-    const seeMore = ''
+    const [solicitacoes, setSolicitacoes] = useState([])
+    const [seeMore, setSeeMore] = useState('yes')
 
+    useEffect(() => {
+        console.log('teste')
+        async function informations(){
+            const idUsuario = await AsyncStorage.getItem('IdUsuario')
+            try {
+                const response = await fetch(`http://localhost:3000/denuncias?id=${idUsuario}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                });
+          
+              const json = await response.json();
+              console.log('Resgatado do banco de dados com sucesso: ', json);
+              setSolicitacoes(json)
+              
+            } catch (error) {
+              console.error('Erro ao enviar denúncia:', error);
+            }
+          }
+          informations()
+        
+    },[])
+    
+      
     function changeButtonActivated(type){
         type === 'concluidas' ? setButtonActivated('concluidas') : setButtonActivated('em andamento')
+    }
+
+    function changeSeeMore(){
+        seeMore == 'yes' ? setSeeMore('no') : setSeeMore('yes')
     }
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
+                <TouchableOpacity style={{alignSelf: 'flex-start', margin: 10}} onPress={() => navigation.goBack('')}>
+                    <Text style={{fontWeight: '800'}}>Voltar</Text>
+                </TouchableOpacity>
                 <Text style={styles.titulo}>
                     Minhas Solicitações
                 </Text>
@@ -85,20 +75,23 @@ export function TelaAndamento() {
                         <Text> CONCLUÍDAS </Text>
                     </TouchableOpacity>
                 </View>
+                <TouchableOpacity style={styles.verMais} onPress={changeSeeMore}>
+                    <Text style={seeMore == 'yes' ? styles.verMenosText : styles.verMaisText}>{seeMore == 'no' ? 'VER MAIS' : 'VER MENOS'}</Text>
+                </TouchableOpacity>
                 {buttonActivated == 'em andamento' &&
                     <FlatList
-                        data={solicitacoes.filter(item => item.pendencia === 'sim')}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => <Card item={item} type={'em andamento'} />}
+                        data={solicitacoes.filter(item => item.pendente == 'Sim')}
+                        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+                        renderItem={({ item }) => <Card item={item} type={'em andamento'} seeMore={seeMore} />}
                         style={{ width: '80%'}}  
                     />
 
                 }
                 {buttonActivated == 'concluidas' &&
                     <FlatList
-                        data={solicitacoes.filter(item => item.pendencia === 'nao')}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => <Card item={item} />}
+                        data={solicitacoes.filter(item => item.pendente == 'Não')}
+                        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+                        renderItem={({ item }) => <Card item={item} seeMore={seeMore}/>}
                         style={{ width: '80%'}} 
                     />
 
@@ -136,6 +129,31 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         padding: 15,
     },
+    verMais:{
+        width: '80%',
+        alignItems: 'flex-end',
+        marginBottom: -20,
+    },
+    verMaisText:{
+        backgroundColor: 'red',
+        borderRadius: 15,
+        fontSize: 12,
+        padding: 10,
+        fontWeight: '700',
+        color: '#000',
+        borderWidth: 1,
+        borderColor: '#000'
+    },
+    verMenosText:{
+        backgroundColor: 'blue',
+        borderRadius: 15,
+        fontSize: 12,
+        padding: 10,
+        fontWeight: '700',
+        color: '#fff',
+        borderWidth: 1,
+        borderColor: '#000'
+    },
     cardContainer:{
         borderWidth: 1,
         borderColor: '#000',
@@ -145,13 +163,39 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-around',
-        maxHeight: 100,
     },
-    // cardContainerSeeMore:{
-    //     flexDirection: 'column-reverse',
-    //     justifyContent: 'center',
-    //     alignItems: 'center'
-    // },
+    cardContainerSeeMore:{
+        borderWidth: 1,
+        borderColor: '#000',
+        padding: 20,
+        borderRadius: 15,
+        flexDirection: 'column-reverse',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginTop: 15,
+    },
+    cardContainerDescription:{
+        color: '#fff', 
+        width: 180, 
+        height: 35, 
+        overflow: 'hidden',
+    },
+    cardContainerDescriptionSeeMore:{
+        width: '80%', 
+        height: 'auto', 
+        overflow: 'none',
+        alignSelf: 'center'
+    },
+    cardContainerImage:{ 
+        width: 100, 
+        height: 100, 
+        borderColor: '#000', 
+        borderWidth: 1 
+    },
+    cardContainerImageSeeMore:{ 
+        width: 150, 
+        height: 150, 
+    },
     cardContainerAndamento: {
         backgroundColor: "#929292"
     },
@@ -166,4 +210,4 @@ const styles = StyleSheet.create({
 
 })
 
-MUDAR TEXT(HEIGHT, OVERFLOW,), MINHEIGHT
+// MUDAR TEXT(HEIGHT, OVERFLOW,)

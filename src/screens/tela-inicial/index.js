@@ -55,7 +55,7 @@ export function TelaInicial({ navigation }) {
               source={require('../../../assets/favicon.png')} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.navigationBox}>
+          <TouchableOpacity style={styles.navigationBox} onPress={() => navigation.navigate('Andamento')}>
             <View style={{ width: '70%' }}>
               <Text style={styles.navigationBoxTitle}>Minhas Solicitações</Text>
               <Text style={styles.navigationBoxSubtitle}>Acompanhe suas denúncias</Text>
