@@ -27,9 +27,31 @@ export function Login({ navigation }) {
           if(json){
             if(json.message === 'Usuario correto'){
                 Alert.alert('Sucesso', 'Usuário correto, pode prosseguir...')
-                console.log('O id do usuario é: ', json.result[0].id)
-                navigation.navigate('TelaInicial')
-                AsyncStorage.setItem('IdUsuario', json.result[0].id)
+                console.log('O id do usuario é: ', json.result[0].adm)
+                if(json.result[0].adm == 'Sim'){
+                    // Alert.alert(
+                    //     'Escolha uma opção',
+                    //     'Como você deseja entrar?',
+                    //     [
+                    //       {
+                    //         text: 'Entrar como Adm',
+                    //         onPress: () => navigation.navigate('TelaInicialAdm'),
+                    //         style: 'default',
+                    //       },
+                    //       {
+                    //         text: 'Entrar como Usuário',
+                    //         onPress: () => navigation.navigate('TelaInicial'),
+                    //         style: 'default',
+                    //       },
+                    //     ],
+                    //     { cancelable: true }
+                    //   );
+                    navigation.navigate('TelaInicialAdm')
+                }else{
+                    const jsonString = json.result[0].id.toString()
+                    AsyncStorage.setItem('IdUsuario', jsonString)
+                    navigation.navigate('TelaInicial')
+                }
             }else{
                 Alert.alert('Erro', 'Usuário não encontrado')
             }

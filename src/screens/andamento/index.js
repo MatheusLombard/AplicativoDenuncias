@@ -10,7 +10,7 @@ function Card({ item, type, seeMore }) {
         <View style={[seeMore == 'yes' ? styles.cardContainerSeeMore : styles.cardContainer, type == 'em andamento'? styles.cardContainerAndamento: styles.cardContainerConcluidas]}>
             <View style={{...styles.cardView, width: seeMore == 'yes' ? '100%' : 'auto'}}>
                 <Text style={{fontWeight: '900', textAlign: 'center', fontSize: seeMore == 'yes' ? 20 : 15}}>{item.titulo}</Text>
-                <Text style={{color: '#fff', width: seeMore == 'yes' ? '80%' : 'auto', alignSelf: seeMore == 'yes' ? 'center' : 'flex-start'}} ><Text style={{fontWeight: '900', color: '#000'}}>Denunciado em:</Text> {item.local}</Text>
+                <Text style={{color: '#fff', width: seeMore == 'yes' ? '80%' : 'auto', alignSelf: seeMore == 'yes' ? 'center' : 'flex-start'}} ><Text style={{fontWeight: '900', color: '#000'}}>Denunciado em:</Text> {item.data_denuncia}</Text>
                 <Text style={seeMore == 'yes' ? styles.cardContainerDescriptionSeeMore : styles.cardContainerDescription} ><Text style={{fontWeight: '900', color: '#000'}}>Descrição:</Text> {item.descricao}</Text>
             </View>
             <View>
@@ -24,7 +24,7 @@ function Card({ item, type, seeMore }) {
 export function TelaAndamento({navigation}) {
     const [buttonActivated, setButtonActivated] = useState('em andamento')
     const [solicitacoes, setSolicitacoes] = useState([])
-    const [seeMore, setSeeMore] = useState('yes')
+    const [seeMore, setSeeMore] = useState('no')
 
     useEffect(() => {
         console.log('teste')

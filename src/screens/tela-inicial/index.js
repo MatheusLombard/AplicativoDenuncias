@@ -10,6 +10,7 @@ export function TelaInicial({ navigation }) {
   useEffect(() => {
     async function pegarUsuario() {
       const id = await AsyncStorage.getItem('IdUsuario')
+      console.log('O id recuperado na tela inicial: ', id)
       try {
         const response = await fetch('http://localhost:3000/listarUsuario', {
           method: 'POST',
